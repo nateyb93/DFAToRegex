@@ -1,11 +1,7 @@
-class transition(object):
+class dfaTransition(object):
     """transition defines a transition on a symbol between two DFA states"""
-    startState;
-    endState;
-    symbol;
 
-    def __init__(self, startState, endState, symbol):
-        self.startState = startState;
+    def __init__(self, endState, symbol):
         self.endState = endState;
         self.symbol = symbol;
 
