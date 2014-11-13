@@ -59,13 +59,26 @@ class dfa(object):
 
 
     def addTransition(self, startState, endState, symbol):
+        """adds a transition to the DFA's transition function"""
         myTransition = self.transition(endState, symbol);
-        if not self.hasTransition(startState, symbol):
-            self.transitionFunction[startState].append(myTransition);
-            print("Transition from " + startState + " to " + endState + " on " + symbol + " added.\n");
 
-        else:
-            print("Couldn't add transtion from " + startState + " to " + endState + " on " + symbol + ".\n");
+        if startState not in self.states:
+            print("State '" + startState + "' not in DFA.");
+
+        elif endState not in self.states:
+            print("State '" + endState + "' not in DFA.");
+
+        elif symbol not in self.alphabet:
+            print("Symbol '" + symbol + "' not in alphabet for this DFA.");
+
+        elif self.hasTransition(startState, symbol):
+            print("Already a transition from " + startState + " to " + endState + " on " + symbol + ".");
+
+        elif not self.hasTransition(startState, symbol):
+            self.transitionFunction[startState].append(myTransition);
+            print("Transition from " + startState + " to " + endState + " on " + symbol + " added.");
+
+        
 
 
     def hasTransition(self, startState, symbol):
@@ -84,7 +97,16 @@ class dfa(object):
                 if transition.symbol == symbol:
                     return transition;
 
-        return None;
+        return None
+
+    def removeTransition(self, startState, symbol):
+        if startState in self.states:
+            for transition in self.transitionFunction[startState]:
+                if transition.symbol == symbol:
+                    try:
+                        transitionFunction[startState].remove(symbol)
+                    except:
+                        print("Transition from state '" + startState + "' on '" + symbol + "' does not exist!");
 
     def setStartState(self, newStartState):
         """sets the start state for the DFA"""
@@ -122,16 +144,19 @@ class dfa(object):
             for symbol in self.alphabet:
                 if not self.hasTransition(state, symbol):
                     print("DFA is missing transition from " + state + " on " + symbol + ".");
+                    self.printTuple();
                     return False;
 
         #make sure there is some accept state
         if not self.acceptStates:
             print("DFA needs at least one accept state");
+            self.printTuple();
             return False;
 
         #check valid start state
         if self.startState not in self.States:
             print("DFA has an invalid start state");
+            self.printTuple();
             return False;
 
         #if all these conditions hold, assume the DFA is valid
@@ -147,7 +172,6 @@ class dfa(object):
     def printTransitions(self):
         """prints the transition table for the DFA"""
         print("\u03B4 = ");
-        print(" ________________________________________________________________________");
         print("| \t", end = "");
         #print '0th' label row
         for symbol in self.alphabet:
@@ -157,6 +181,7 @@ class dfa(object):
 
         #print each state's transitions
         for rowState in self.states:
+            print("|");
             print("| " + rowState + "\t", end = "");
             for symbol in self.alphabet:
                 if self.hasTransition(rowState, symbol):

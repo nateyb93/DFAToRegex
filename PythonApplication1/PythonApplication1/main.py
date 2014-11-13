@@ -1,9 +1,6 @@
 """defines the main line for the program"""
 import dfa
-import state
 import sys
-import transition
-
 myDFA = dfa.dfa();
 
 "Begin functions"
@@ -51,7 +48,7 @@ def handle_input(option):
         changeAcceptStates(option);
 
     elif(option == '0'):
-        DFAToRegex();
+        myDFA.convertToRegex();
 
     elif(option == 'x'):
         sys.exit(0);

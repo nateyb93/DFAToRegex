@@ -26,16 +26,10 @@
     <Compile Include="__init__.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="state.py">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="dfa.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="main.py" />
-    <Compile Include="transition.py">
-      <SubType>Code</SubType>
-    </Compile>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
