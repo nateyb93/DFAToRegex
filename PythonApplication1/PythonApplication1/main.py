@@ -12,7 +12,7 @@ def main():
     print("Welcome to the DFA->RegEx converter program");
     
     print("A default DFA has been created for you: ");
-    myDFA.prettyPrint();
+    myDFA.printTuple();
 
     option = 0;
 
@@ -39,7 +39,7 @@ def handle_input(option):
         changeAlphabet(option);
 
     elif(option == '3'):
-        option = input("Press 0 to remove a transition from the DFA or 1 to add a transition:\n");
+        option = input("Press 0 to remove a transition or 1 to add a transition:\n");
         changeTransitions(option);
 
     elif(option == '4'):
@@ -85,31 +85,37 @@ def changeAlphabet(option):
 
 
 def changeTransitions(option):
-    """updates the transitions for the dfa object"""
+    """updates the transitions on the dfa"""
     if option == '0':
-        stateName = input("Type the name of the state you wish to remove a transition from:\n");
-        startState = myDFA.getState(stateName);
-        symbolToRemove = input("Type the symbol of the transition to remove:\n");
-        startState.removeTransition(symbolToRemove);
-        
-    elif option == '1':
-        stateName = input("Type the name of the state you wish to add a transition to:\n");
-        startState = myDFA.getState(stateName);
-        symbolToAdd = input("Type the symbol of the tranition to add:\n");
-        endState = input("Type the name of the state for the transition to end at:\n");
-        startState.addTransition(endState, symbolToAdd);
+        startState = input("Type the state you'd like to remove a transition from:\n");
+        symbol = input("Type the symbol you wish to remove a transition on:\n")
+        myDFA.removeTransition(symbol);
+        myDFA.printTuple();
 
-    myDFA.prettyPrint();
-    return;
+    elif option == '1':
+        startState = input("Type the name of the state you'd like to add a transition to:\n");
+        endState = input ("Type the name of the state you'd like the transition to end at:\n");
+        symbol = input("Type the symbol for the transition:\n");
+        myDFA.addTransition(startState, endState, symbol);
+        myDFA.printTuple();
 
 
 def changeStartState(option):
     """updates the start state for the dfa object"""
+    newStartState = input("Which state would you like to set as the start state?\n");
+    myDFA.setStartState(newStartState);
     return;
 
 
 def changeAcceptStates(option):
     """updates the accept states for the dfa object"""
+    if option == '0':
+        acceptNoMore = input("Which state would you like to remove from the list of accept states?\n");
+        myDFA.removeAcceptState(acceptNoMore);
+
+    elif option == '1':
+        newAcceptState = input("Which state would you like to label as an accept state?\n");
+        myDFA.addAcceptState(newAcceptState);
     return;
 
 

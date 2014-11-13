@@ -1,127 +1,195 @@
-import state;
 import pprint;
+from collections import namedtuple;
 
 class dfa(object):
     """A valid DFA has:\n\t1. accept state(s)\n\t2. transitions from each symbol\n\t3. no empty transitions"""
-    def __init__(self, states = [], alphabet = [], transitions = [], acceptStates = []):
+    transition = namedtuple("transition", "endState, symbol");
+
+    def __init__(self, states = [], alphabet = [], acceptStates = []):
         self.states = states;
         self.alphabet = alphabet;
-        self.startState = state.dfaState("q1", True, False);
+        self.transitionFunction = dict();
+        self.startState = 'q0';
         self.states.append(self.startState);
+        self.transitionFunction[self.startState] = [];
         self.acceptStates = acceptStates;
+        
+
+    def addState(self, state):
+        """Adds a state to the DFA"""
+        if state not in self.states:
+            self.states.append(state);
+            self.transitionFunction[state] = [];
+            print ("State " + state + " added.\n");
+            print();
+            
+        else:
+            print("State " + state + " already in the alphabet.\n");
+            print();
+
+        self.printTuple();
+
+    def removeState(self, state):
+        """removes a state from the DFA"""
+        try:
+            self.states.remove(state);
+            self.transitionFunction.pop(state);
+            print("State " + state + " removed.\n");
+        except:
+            print("State " + state + " wasn't found.\n");
 
 
     def addToAlphabet(self, symbol):
         """Adds a symbol to the alphabet for the DFA"""
-        if(symbol not in self.alphabet):
+        if symbol not in self.alphabet:
             self.alphabet.append(symbol);
             print("Symbol '" + symbol + "' added.");
         else:
-            print(symbol + "is already in the alphabet for this DFA.");
+            print(symbol + " is already in the alphabet for this DFA.");
 
-        self.prettyPrint();
+        self.printTuple();
 
     def removeFromAlphabet(self, symbol):
         """removes a symbol from the DFA alphabet"""
-        if symbol not in self.alphabet:
-            self.alphabet.append(symbol);
-    
-    def getState(self, name):
-        """gets a state with the specified name or returns None"""
-        for dfaState in self.states:
-            if name == dfaState.name:
-                return dfaState;
-                
+        try:
+            self.alphabet.remove(symbol);
+
+        except:
+            print("Symbol '" + symbol + "' not in alphabet.");
+
+
+    def addTransition(self, startState, endState, symbol):
+        myTransition = self.transition(endState, symbol);
+        if not self.hasTransition(startState, symbol):
+            self.transitionFunction[startState].append(myTransition);
+            print("Transition from " + startState + " to " + endState + " on " + symbol + " added.\n");
+
+        else:
+            print("Couldn't add transtion from " + startState + " to " + endState + " on " + symbol + ".\n");
+
+
+    def hasTransition(self, startState, symbol):
+        """see whether the DFA has a transition from the start state on the specified symbol"""
+        if startState in self.states:
+            for transition in self.transitionFunction[startState]:
+                if transition.symbol == symbol:
+                    return True;
+
+        return False;
+
+    def getTransition(self, startState, symbol):
+        """gets the transition from the specified state on the specified symbol"""
+        if startState in self.states:
+            for transition in self.transitionFunction[startState]:
+                if transition.symbol == symbol:
+                    return transition;
+
         return None;
 
-    def addState(self, name):
-        """Adds a state to the DFA"""
-        newState = state.dfaState(name, False, False);
+    def setStartState(self, newStartState):
+        """sets the start state for the DFA"""
+        if newStartState in self.states:
+            self.startState = newStartState;
+            print("Start state is now state '" + newStartState + "'.");
 
-        "check if state is already in alphabet"
-        if self.getState(name) != None:
-            print("State '" + name + "' already in alphabet.");
-            return;
-        
-
-        self.states.append(newState);
-        print("State '" + name + "' added.");
-        self.prettyPrint();
-        return;
-        
-
-    def removeState(self, name):
-        """Removes a state from the DFA"""
-        stateToRemove = None;
-
-        for state in self.states:
-            if name == state.name:
-                stateToRemove = state;
-
-        if(stateToRemove != None):
-            self.states.remove(stateToRemove);
-            print("State '" + name + "' removed.\n");
         else:
-            print("No state to remove!\n");
+            print("State " + newStartState + " does not exist in this DFA.");
 
-        self.prettyPrint();
+    
+    def addAcceptState(self, newAcceptState):
+        """adds a new accept state to the DFA"""
+        if newAcceptState not in self.states:
+            print("State '" + newAcceptState + "' is not a part of this DFA.");
+
+        else:
+            if newAcceptState not in self.acceptStates:
+                self.acceptStates.append(newAcceptState);
+
+    
+    def removeAcceptState(self, acceptNoMore):
+        """removes an accept state from the DFA (state remains a part of the DFA"""
+        try:
+            self.acceptStates.remove(acceptNoMore);
+
+        except:
+            print("State '" + acceptNoMore + "' is not an accept state.");
+
+
+    def validate(self):
+        """Validates that the DFA is in valid form"""
+        #make sure each state has a valid symbol
+        for state in self.states:
+            for symbol in self.alphabet:
+                if not self.hasTransition(state, symbol):
+                    print("DFA is missing transition from " + state + " on " + symbol + ".");
+                    return False;
+
+        #make sure there is some accept state
+        if not self.acceptStates:
+            print("DFA needs at least one accept state");
+            return False;
+
+        #check valid start state
+        if self.startState not in self.States:
+            print("DFA has an invalid start state");
+            return False;
+
+        #if all these conditions hold, assume the DFA is valid
+        print("DFA is valid!");
+        return True;
+
+
+    def convertToRegex(self):
+        self.validate();
+        "do conversion things"
+
 
     def printTransitions(self):
         """prints the transition table for the DFA"""
         print("\u03B4 = ");
-        print("\t", end = "");
-
-        "print '0th' label row"
-        for state in self.states:
-            print(state.name + "\t", end = "");
+        print(" ________________________________________________________________________");
+        print("| \t", end = "");
+        #print '0th' label row
+        for symbol in self.alphabet:
+            print(symbol + "\t", end = "");
 
         print();
 
-        "print rows"
+        #print each state's transitions
         for rowState in self.states:
-            print(rowState.name + "\t", end = "");
-
-            "print a column for each row"
-            for columnState in self.states:
-                toTransition = rowState.getTransition(columnState);
-                if toTransition != None:
-                    print(toTransition.symbol + "\t", end = "");
+            print("| " + rowState + "\t", end = "");
+            for symbol in self.alphabet:
+                if self.hasTransition(rowState, symbol):
+                    print(self.getTransition(rowState, symbol).endState + "\t", end = "");
                 else:
                     print("\t", end = "");
-            print();"newline"
 
-        print();
+            print();
+
 
     
-    def prettyPrint(self):
+        
+
+    def printTuple(self):
         """Prints the formal description for the DFA."""
 
         print("\nThe current properties of your DFA are...");
 
-        "set of states"
-        print("         Q = [", end = "");
-        for state in self.states:
-            print("'" + state.name + "', ", end = "");
-        print("]");
+        #set of states
+        print("         Q = ", end = ""), pprint.pprint(self.states);
 
-        "symbol alphabet"
+        #symbol alphabet
         print("         \u03A3 = ", end = ""), pprint.pprint(self.alphabet);
         
-        "transition table"
+        #transition table
         print("         \u03B4 = (see below)");
 
-        "start state"
-        print("    Qstart = " + self.startState.name);
+        #start state
+        print("    Qstart = " + self.startState);
 
-        "accept states"
+        #accept states
         print("Qaccept(s) = ", end = ""), pprint.pprint(self.acceptStates);
 
         print();
         self.printTransitions();
         print();
-
-    def validate(self):
-        """Validates that the DFA is in valid form"""
-        for state in self.states:
-            for transitions in state.transitions:
-                "do stuff"

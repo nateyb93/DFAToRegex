@@ -1,4 +1,4 @@
-import transition as dfaTransition;
+import transition;
 
 class dfaState(object):
     """state defines a state object within a dfa. states have a name, and two booleans that define whether the state is the start state or an accept state"""
@@ -9,27 +9,22 @@ class dfaState(object):
         self.isAccept = isAccept;
         self.transitions = transitions;
 
-    def addTransition(self, end, symbol):
-        """adds a transition to the state object"""
-        for transition in self.transitions:
-            if transition.symbol == symbol:
-                print("State " + self.name + " already has a transition on symbol " + symbol);
-                return;
-        "if no transition was found on the specified symbol, add it."
-        self.transitions.append(dfaTransition.dfaTransition(end, symbol));
 
+    def addTransition(self, endStateName, symbol):
+        """adds a transition to the state"""
+        myTransition = object();
+        for aTransition in self.transitions:
+            if symbol == aTransition.symbol:
+                return False;
+
+        myTransition = transition.dfaTransition(endStateName, symbol);
+        return True;
 
     def removeTransition(self, symbol):
-        """removes a transition from the state object"""
-        for transition in self.transitions:
-            if symbol == transition.symbol:
-                self.transitions.remove(transition);
+        """removes the transition on the specified symbol from the state"""
+        for aTransition in self.transitions:
+            if symbol == aTransition.symbol:
+                self.transitions.remove(aTransition);
+                return True;
 
-
-    def getTransition(self, symbol):
-        """gets a transition from the state with the specified name"""
-        for transition in self.transitions:
-            if symbol == transition.symbol:
-                return transition;
-
-        return None;
+        return False;
