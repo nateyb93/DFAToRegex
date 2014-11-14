@@ -1,5 +1,6 @@
 import pprint;
 from collections import namedtuple;
+from itertools import combinations;
 
 class dfa(object):
     """A valid DFA has:\n\t1. accept state(s)\n\t2. transitions from each symbol\n\t3. no empty transitions"""
@@ -164,11 +165,33 @@ class dfa(object):
         return True;
 
 
+
+
     def convertToRegex(self):
         self.validate();
-        "do conversion things"
+        #do conversion things
+
+    def getMultipleEdges(self, startState, endState):
+        """returns a list containing each symbol for a transition to the specified end state"""
+        if (startState not in self.states) or (endState not in self.states):
+            print("Start or end state does not exist in DFA. Check your input and try again");
+            return;
+
+        #check to see if 
+        multipleTransitionList = [];
+        for aTransition in self.transitionFunction[startState]:
+            if aTransition.endState == endState:
+                multipleTransitionList.append(aTransition.symbol);
+
+        return multipleTransitionList;
 
 
+    def simplifyMultiEdges(self):
+        """removes multiple edges from the list of transitions and replaces them with union"""
+
+
+
+                    
     def printTransitions(self):
         """prints the transition table for the DFA"""
         print("\u03B4 = ");
