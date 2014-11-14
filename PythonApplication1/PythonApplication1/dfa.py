@@ -177,7 +177,7 @@ class dfa(object):
             print("Start or end state does not exist in DFA. Check your input and try again");
             return;
 
-        #check to see if 
+        #check to see if some state has multiple transtions to a single node
         multipleTransitionList = [];
         for aTransition in self.transitionFunction[startState]:
             if aTransition.endState == endState:
@@ -186,25 +186,64 @@ class dfa(object):
         return multipleTransitionList;
 
 
-    def simplifyMultiEdges(self):
+    def removeMultiEdges(self):
         """removes multi-edges from the list of transitions and replaces them with union"""
         for startState in self.states:
             for endState in self.states:
 
                 #union multiple edges
                 multiEdges = self.getMultipleEdges(startState, endState);
-                unionEdge = "";
-                if multiEdges.count() >= 2:
-                    unionEdge = " \u222a ".join(multiEdges);
+                unionEdge = "(";
+                if multiEdges.count() < 2:
+                    continue;
+                unionEdge = " \u222a ".join(multiEdges);
+                unionEdge = unionEdge + ")";
 
-                    #remove edges we've combined into multi edges
-                    for edge in multiEdges:
-                        self.removeTransition(startState, edge);
+                #remove edges we've combined into multi edges
+                for edge in multiEdges:
+                    self.removeTransition(startState, edge);
 
-                    #add the unioned edge to the transition
-                    self.transitionFunction[startState].append(self.transition(endState, unionEdge));
+                #add the unioned edge to the transition
+                self.transitionFunction[startState].append(self.transition(endState, unionEdge));
 
-                    
+
+
+    def getSingleStateLoops(self, state):
+        """gets loops on a single state in a DFA"""
+        loopSymbols = [];
+        for startState in self.states:
+            for aTransition in self.transitionFunction[startState]:
+                if aTransition.endState == startState:
+                    loopSymbols.append(aTransition.symbol);
+
+        return loopSymbols;
+
+
+    def removeSingleStateLoops(self):
+        """removes single-state loops and replaces them with kleene star regex"""
+        for state in self.states:
+            loops = getSingleStateLoops(state);
+            loopRegex = "";
+            #if we have more than one symbol, combine them
+            #(a*b*)* for multi loops
+            if loops.count() >= 2:
+                loopRegex += "(";
+                for symbol in loops:
+                    loopRegex += symbol + "*";
+                loopRegex += ")*";
+
+            elif loops.count() == 1:
+                loopRegex = loops[0] + "*";
+
+            #remove loop transitions and replace with regex
+            for symbol in loops:
+                self.removeTransition(state, symbol);
+            for aTransition in self.transitionFunction[state]:
+                aTransition.symbol = loopRegex + aTransition.symbol;
+
+            
+
+           
                 
                     
     def printTransitions(self):
