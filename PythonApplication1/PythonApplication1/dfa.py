@@ -187,10 +187,25 @@ class dfa(object):
 
 
     def simplifyMultiEdges(self):
-        """removes multiple edges from the list of transitions and replaces them with union"""
+        """removes multi-edges from the list of transitions and replaces them with union"""
+        for startState in self.states:
+            for endState in self.states:
 
+                #union multiple edges
+                multiEdges = self.getMultipleEdges(startState, endState);
+                unionEdge = "";
+                if multiEdges.count() >= 2:
+                    unionEdge = " \u222a ".join(multiEdges);
 
+                    #remove edges we've combined into multi edges
+                    for edge in multiEdges:
+                        self.removeTransition(startState, edge);
 
+                    #add the unioned edge to the transition
+                    self.transitionFunction[startState].append(self.transition(endState, unionEdge));
+
+                    
+                
                     
     def printTransitions(self):
         """prints the transition table for the DFA"""
